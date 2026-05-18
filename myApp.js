@@ -1,14 +1,85 @@
 require('dotenv').config();
+const mongoose = require('mongoose');
+mongoose.connect(process.env.MONGO_URI);
 
 
 let Person;
 
-const createAndSavePerson = (done) => {
-  done(null /*, data*/);
+let personSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: [true, "Imię jest wymagane"]
+  },
+  age: Number,
+  favoriteFood: [String]
+});
+Person = mongoose.model("Person", personSchema);
+
+/*const createAndSavePerson = (done) => {
+  const person = new Person({
+    name: "Dante",
+    age: 35,
+    favoriteFoods:["pizza", "pasta"]
+  })
+  person.save(function(err, data) {
+    if (err) {
+      return done(err)
+    } 
+    return done(null, data)
+  })
+}; */
+
+/*const createAndSavePerson = (done) => {
+  const person = new Person({
+    name: "Dante",
+    age: 35,
+    favoriteFoods: ["pizza", "pasta"]
+  });
+
+  person.save()
+    .then((data) => done(null, data))
+    .catch((err) => done(err));
+};*/
+
+
+const createAndSavePerson = async (done) => {
+  const person = new Person({
+    name: "Dante",
+    age: 35,
+    favoriteFood: ["pizza", "pasta"]
+  });
+
+  try {
+    const data = await person.save();
+    done(null, data);
+  } catch (err) {
+    done(err);
+  }
 };
 
-const createManyPeople = (arrayOfPeople, done) => {
-  done(null /*, data*/);
+
+// Stary styl - callback
+/*const createManyPeople = (arrayOfPeople, done) => {
+  Person.create(arrayOfPeople, function(err, data) {
+    if (err) return done(err);
+    done(null, data);
+  });
+};*/
+
+// Nowy styl - .then().catch() (bezpieczny dla FreeCodeCamp)
+/*const createManyPeople = (arrayOfPeople, done) => {
+  Person.create(arrayOfPeople)
+    .then((data) => done(null, data))
+    .catch((err) => done(err));
+};*/
+
+const createManyPeople = async (arrayOfPeople, done) => {
+  try {
+    const data = await Person.create(arrayOfPeople);
+    done(null, data);
+  } catch (err) {
+    done(err);
+  }
 };
 
 const findPeopleByName = (personName, done) => {
