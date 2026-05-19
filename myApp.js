@@ -11,7 +11,7 @@ let personSchema = new mongoose.Schema({
     required: [true, "Imię jest wymagane"]
   },
   age: Number,
-  favoriteFood: [String]
+  favoriteFoods: [String]
 });
 Person = mongoose.model("Person", personSchema);
 
@@ -46,7 +46,7 @@ const createAndSavePerson = async (done) => {
   const person = new Person({
     name: "Dante",
     age: 35,
-    favoriteFood: ["pizza", "pasta"]
+    favoriteFoods: ["pizza", "pasta"]
   });
 
   try {
@@ -82,22 +82,56 @@ const createManyPeople = async (arrayOfPeople, done) => {
   }
 };
 
-const findPeopleByName = (personName, done) => {
-  done(null /*, data*/);
+// Stary styl - callback
+/*const findPeopleByName = (personName, done) => {
+  Person.find({ name: personName }, function(err, data) {
+    if (err) return done(err);
+    done(null, data);
+  });
+};*/
+
+// Nowy styl - async/await
+const findPeopleByName = async (personName, done) => {
+  try {
+    const data = await Person.find({ name: personName });
+    done(null, data);
+  } catch (err) {
+    done(err);
+  }
 };
 
-const findOneByFood = (food, done) => {
-  done(null /*, data*/);
+const findOneByFood = async (food, done) => {
+  try {
+    const data = await Person.findOne({ favoriteFoods: food });
+    done(null, data);
+  } catch (err) {
+    done(err);
+  }
 };
 
-const findPersonById = (personId, done) => {
-  done(null /*, data*/);
+const findPersonById = async (personId, done) => {
+  try {
+    const data = await Person.findById(personId);
+    done(null, data);
+  } catch (err) {
+    done(err);
+  }
 };
 
-const findEditThenSave = (personId, done) => {
-  const foodToAdd = "hamburger";
+const findEditThenSave = async (personId, done) => {
+  try {
+    // KROK 1: znajdź osobę po _id
+    const person = await Person.findById(personId);
 
-  done(null /*, data*/);
+    // KROK 2: dodaj "hamburger" do tablicy favoriteFoods
+    person.favoriteFoods.push("hamburger");
+
+    // KROK 3: zapisz zaktualizowany dokument
+    const data = await person.save();
+    done(null, data);
+  } catch (err) {
+    done(err);
+  }
 };
 
 const findAndUpdate = (personName, done) => {
