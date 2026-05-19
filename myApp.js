@@ -134,10 +134,17 @@ const findEditThenSave = async (personId, done) => {
   }
 };
 
-const findAndUpdate = (personName, done) => {
-  const ageToSet = 20;
-
-  done(null /*, data*/);
+const findAndUpdate = async (personName, done) => {
+  try {
+    const data = await Person.findOneAndUpdate(
+      { name: personName },   // KROK 1: znajdź po imieniu
+      { $set: { age: 20 } },  // KROK 2: ustaw wiek na 20
+      { new: true }            // KROK 3: zwróć zaktualizowany dokument
+    );
+    done(null, data);
+  } catch (err) {
+    done(err);
+  }
 };
 
 const removeById = (personId, done) => {
