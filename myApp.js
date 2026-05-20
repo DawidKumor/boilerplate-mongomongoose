@@ -147,20 +147,38 @@ const findAndUpdate = async (personName, done) => {
   }
 };
 
-const removeById = (personId, done) => {
-  done(null /*, data*/);
+const removeById = async (personId, done) => {
+  try {
+    const data = await Person.findByIdAndDelete(personId);
+    done(null, data);
+  } catch (err) {
+    done(err);
+  }
 };
 
-const removeManyPeople = (done) => {
+const removeManyPeople = async (done) => {
   const nameToRemove = "Mary";
 
-  done(null /*, data*/);
+  try {
+    const data = await Person.deleteMany({ name: nameToRemove });
+    done(null, data);
+  } catch (err) {
+    done(err);
+  }
 };
 
-const queryChain = (done) => {
+const queryChain = async (done) => {
   const foodToSearch = "burrito";
 
-  done(null /*, data*/);
+  try {
+    const data = await Person.find({ favoriteFoods: foodToSearch })
+      .sort({ name: 1 })
+      .limit(2)
+      .select({ age: false });
+    done(null, data);
+  } catch (err) {
+    done(err);
+  }
 };
 
 /** **Well Done !!**
